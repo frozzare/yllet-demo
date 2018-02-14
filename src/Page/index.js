@@ -1,27 +1,17 @@
 import React from 'react';
-import { withClient } from 'yllet-react';
+import { withClientData } from 'yllet-react';
 
 class Page extends React.Component {
-  state = {};
-
-  componentDidMount() {
-    const slug = this.props.match.params.slug.replace('/', '');
-
-    this.props.client.posts().get({
-        slug: slug
-    }).then(res => {
-        this.setState({
-            post: res.data[0]
-        })
-    });
-  }
-
   render() {
-    if (!this.state.post) {
+    if (this.props.error) {
+      return <p>{this.props.error.message}</p>;
+    }
+
+    if (!this.props.data) {
       return <p>Loading...</p>;
     }
 
-    const { post } = this.state;
+    const post = this.props.data;
 
     return (
       <div>
@@ -32,4 +22,6 @@ class Page extends React.Component {
   }
 }
 
-export default withClient(Page);
+export default withClientData(client => {
+  return client.posts().get(1);
+})(Page);
