@@ -1,13 +1,13 @@
 import React from 'react';
 import { withClientData } from 'yllet-react';
 
-class Page extends React.Component {
+class Post extends React.Component {
   render() {
     if (this.props.error) {
       return <p>{this.props.error.message}</p>;
     }
 
-    if (!this.props.data) {
+    if (this.props.loading) {
       return <p>Loading...</p>;
     }
 
@@ -22,6 +22,14 @@ class Page extends React.Component {
   }
 }
 
-export default withClientData(client => {
-  return client.posts().get(1);
-})(Page);
+export default withClientData((client, props) => {
+  return client.posts().get({
+    slug: props.match.params.slug
+  }).then(res => {
+    if (res.status === 200 && res.data.length) {
+      return res.data[0];
+    }
+
+    throw new Error('No post found');
+  });
+})(Post);

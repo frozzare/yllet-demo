@@ -1,12 +1,29 @@
 import React from 'react';
+import { withClientData } from 'yllet-react';
 
-export default () => (
-  <div>
-    <h1>Home</h1>
-    <h2>Posts</h2>
-    <ul>
-      <li><a href="/hello-world/">Hello, world</a></li>
-      <li><a href="/quia-corrupti-quaerat-et-mollitia/">Quia corrupti quaerat et mollitia</a></li>
-    </ul>
-  </div>
-);
+class Home extends React.Component {
+  render() {
+    if (this.props.error) {
+      return <p>{this.props.error.message}</p>;
+    }
+
+    if (this.props.loading) {
+      return <p>Loading...</p>;
+    }
+
+    return (
+      <div>
+        <h1>Home</h1>
+        <ul>
+          {this.props.data.map(post => (
+            <li key={post.slug}><a href={post.slug}>{post.title.rendered}</a></li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default withClientData(client => {
+  return client.posts().get();
+})(Home);
